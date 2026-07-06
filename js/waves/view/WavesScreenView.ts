@@ -150,11 +150,12 @@ class WavesScreenView extends ScreenView {
   private readonly stopwatchNode: WaveInterferenceStopwatchNode;
   private readonly resetAllButton: ResetAllButton;
 
-  // Subclass hooks for the traversal order: extra play-area nodes (e.g. the Slits plane-wave generator) are placed
-  // right after the wave source, and extra control-area panels (e.g. the Slits control panel) right after the main
-  // control panel. Subclasses push to these and then call updateTraversalOrder().
+  // Subclass hooks for the traversal order: extra play-area nodes (e.g. the Slits plane-wave generator and barriers)
+  // are placed right after the wave source, and extra control-panel-like nodes (e.g. the Slits control panel) right
+  // after the main control panel. Both groups end up in the play area's pdomOrder. Subclasses push to these and then
+  // call updateTraversalOrder().
   protected readonly additionalPlayAreaNodes: Node[] = [];
-  protected readonly additionalControlAreaNodes: Node[] = [];
+  protected readonly additionalControlPanelNodes: Node[] = [];
 
   // executed once per step, or null if there is no per-step behavior (e.g. when there is no waterScene)
   private stepAction: PhetioAction | null;
@@ -766,14 +767,17 @@ class WavesScreenView extends ScreenView {
     if ( options.showSceneSpecificWaveGeneratorNodes ) {
       const primaryWaveGeneratorToggleNode = createWaveGeneratorToggleNode( true );
       this.addChild( primaryWaveGeneratorToggleNode ); // Primary source
-      this.waveGeneratorNodes.push( primaryWaveGeneratorToggleNode );
 
       // Secondary source
       if ( model.numberOfSources === 2 ) {
         const secondaryWaveGeneratorToggleNode = createWaveGeneratorToggleNode( false );
         this.addChild( secondaryWaveGeneratorToggleNode );
+
+        // The secondary source is positioned above the primary source (see the sign convention in
+        // WaveGeneratorNode), so it leads in keyboard traversal order to match its visual (topmost) position.
         this.waveGeneratorNodes.push( secondaryWaveGeneratorToggleNode );
       }
+      this.waveGeneratorNodes.push( primaryWaveGeneratorToggleNode );
     }
     else {
 
@@ -803,38 +807,40 @@ class WavesScreenView extends ScreenView {
 
   /**
    * Sets the keyboard traversal (pdom) order for the play area and the control area. The play area runs from the wave
-   * source through the intensity graph and then the deployed tools (measuring tape, stopwatch, wave meter, which are
-   * last); the control area holds the toolbox launcher and control panel(s) and ends with the Reset All button. This is
-   * safe to call multiple times,
-   * so subclasses can augment additionalPlayAreaNodes / additionalControlAreaNodes and call it again to fold in their
-   * own interactive content.
+   * source through the draggable barrier/slit (when applicable), the intensity graph, the deployed tools (measuring
+   * tape, stopwatch, wave meter), and ends with the toolbox launcher and control panel(s). The control area holds the
+   * pulse/continuous and top/side-view radio buttons (when applicable), the time control, and ends with the Reset All
+   * button. This grouping is intended to keep focus from bouncing around the screen once screen-reader description is
+   * added: exploring the wave source/tools first, then the panels that configure them. This is safe to call multiple
+   * times, so subclasses can augment additionalPlayAreaNodes / additionalControlPanelNodes and call it again to fold
+   * in their own interactive content.
    */
   protected updateTraversalOrder(): void {
 
     this.pdomPlayAreaNode.pdomOrder = [
       ...this.waveGeneratorNodes,
       ...this.additionalPlayAreaNodes,
-      this.disturbanceTypeNode,
-      this.viewpointRadioButtonGroup,
-      this.timeControlNode,
 
-      // The light-scene intensity graph (with zoom buttons) is the last fixed play-area control, just before the
-      // deployed tools. Null (and filtered out) on screens without a light scene.
+      // The light-scene intensity graph (with zoom buttons). Null (and filtered out) on screens without a light scene.
       this.intensityGraphPanel,
 
-      // The real (deployed) tools are the last things in the play area, in this order. The toolbox launcher panel
-      // lives in the control area below.
+      // The deployed tools, in this order.
       this.measuringTapeNode,
       this.stopwatchNode,
-      this.waveMeterNode
+      this.waveMeterNode,
+
+      // The toolbox launcher and control panel(s) come last in the play area.
+      this.toolboxPanel,
+      this.controlPanel,
+      ...this.additionalControlPanelNodes
     ].filter( ( node ): node is Node => node !== null );
 
     this.pdomControlAreaNode.pdomOrder = [
-      this.toolboxPanel,
-      this.controlPanel,
-      ...this.additionalControlAreaNodes,
+      this.disturbanceTypeNode,
+      this.viewpointRadioButtonGroup,
+      this.timeControlNode,
       this.resetAllButton
-    ];
+    ].filter( ( node ): node is Node => node !== null );
   }
 
   public globalToLatticeCoordinate( point: Vector2 ): Vector2 {

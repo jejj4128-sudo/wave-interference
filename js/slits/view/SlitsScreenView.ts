@@ -49,8 +49,8 @@ class SlitsScreenView extends WavesScreenView {
     this.controlPanel.boundsProperty.lazyLink( updateSlitControlPanel );
     this.addChild( slitControlPanel );
 
-    // The slit control panel is an additional control-area panel, traversed right after the main control panel.
-    this.additionalControlAreaNodes.push( slitControlPanel );
+    // The slit control panel is traversed right after the main control panel, in the play area.
+    this.additionalControlPanelNodes.push( slitControlPanel );
 
     // Make sure tools go in front of this control panel, see https://github.com/phetsims/wave-interference/issues/218
     slitControlPanel.moveToBack();

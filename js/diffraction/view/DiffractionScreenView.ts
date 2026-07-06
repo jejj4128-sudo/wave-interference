@@ -292,15 +292,15 @@ class DiffractionScreenView extends ScreenView {
     this.addChild( laserPointerNode );
     this.addChild( wavelengthPanel );
 
-    // Keyboard traversal order. Play area: laser on/off, wavelength, then the aperture-type radio buttons. Control
-    // area: the per-scene aperture controls (diameter, eccentricity, etc.), ending with Reset All.
+    // Keyboard traversal order. Play area: laser on/off, wavelength, the aperture-type radio buttons, then the
+    // per-scene aperture controls (diameter, eccentricity, etc.). Control area: just Reset All.
     this.pdomPlayAreaNode.pdomOrder = [
       laserPointerNode,
       wavelengthPanel,
-      sceneRadioButtonGroup
+      sceneRadioButtonGroup,
+      controlPanelToggleNode
     ];
     this.pdomControlAreaNode.pdomOrder = [
-      controlPanelToggleNode,
       resetAllButton
     ];
 
