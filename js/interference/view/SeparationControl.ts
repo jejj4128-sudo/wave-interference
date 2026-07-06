@@ -42,22 +42,26 @@ class SeparationControl extends ToggleNode<Scene> {
     // because the control constructor calls are substantially different.
     super( model.sceneProperty, [ {
       value: model.waterScene!,
-      createNode: () => new NumberControl( WaveInterferenceStrings.separationStringProperty, waterSeparationProperty, waterSceneRange, combineOptions<NumberControlOptions>( {
-        delta: 0.1,
-        numberDisplayOptions: {
-          decimalPlaces: 1
-        },
-        sliderOptions: {
+      createNode: () => {
 
-          // Keyboard steps in cm. Without these, the default keyboardStep is finer than the 0.5 cm snapping below, so
-          // arrow keys round back to the same value and the slider does not move.
-          keyboardStep: 0.5,
-          shiftKeyboardStep: 0.5,
-          pageKeyboardStep: 1,
-          constrainValue: value => roundToInterval( value, 0.5 ),
-          majorTicks: createTicks( waterSceneRange, allRanges )
-        }
-      }, createMuteOptions( model.waterScene! ), WaveInterferenceConstants.NUMBER_CONTROL_OPTIONS ) )
+        // Captured so constrainValue can use a finer snap interval while Shift is held (keeping mouse snapping at 0.5 cm).
+        const waterNumberControl: NumberControl = new NumberControl( WaveInterferenceStrings.separationStringProperty, waterSeparationProperty, waterSceneRange, combineOptions<NumberControlOptions>( {
+          delta: 0.1,
+          numberDisplayOptions: {
+            decimalPlaces: 1
+          },
+          sliderOptions: {
+
+            // Keyboard steps in cm: 0.5 normally, 0.1 with Shift (matching the increment/decrement button amount).
+            keyboardStep: 0.5,
+            shiftKeyboardStep: 0.1,
+            pageKeyboardStep: 1,
+            constrainValue: value => roundToInterval( value, waterNumberControl.slider.shiftKeyDown ? 0.1 : 0.5 ),
+            majorTicks: createTicks( waterSceneRange, allRanges )
+          }
+        }, createMuteOptions( model.waterScene! ), WaveInterferenceConstants.NUMBER_CONTROL_OPTIONS ) );
+        return waterNumberControl;
+      }
     }, {
 
       value: model.soundScene!,
