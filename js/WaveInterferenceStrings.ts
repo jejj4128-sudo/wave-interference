@@ -84,6 +84,9 @@ type StringsType = {
     'toolControlsStringProperty': LocalizedStringProperty;
     'removeFromToolboxStringProperty': LocalizedStringProperty;
     'returnToToolboxStringProperty': LocalizedStringProperty;
+    'chooseABarrierTypeStringProperty': LocalizedStringProperty;
+    'barrierTypeStringProperty': LocalizedStringProperty;
+    'barrierTypesStringProperty': LocalizedStringProperty;
   }
 };
 

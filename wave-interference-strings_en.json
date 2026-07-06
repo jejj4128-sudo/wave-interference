@@ -199,5 +199,14 @@
   },
   "keyboardHelpDialog.returnToToolbox": {
     "value": "Return to toolbox"
+  },
+  "keyboardHelpDialog.chooseABarrierType": {
+    "value": "Choose a Barrier Type"
+  },
+  "keyboardHelpDialog.barrierType": {
+    "value": "barrier type"
+  },
+  "keyboardHelpDialog.barrierTypes": {
+    "value": "barrier types"
   }
 }

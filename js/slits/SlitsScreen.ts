@@ -33,7 +33,10 @@ class SlitsScreen extends Screen<SlitsModel, SlitsScreenView> {
       } ),
       showUnselectedHomeScreenIconFrame: true,
       showScreenIconFrameForNavigationBarFill: 'black',
-      createKeyboardHelpNode: () => new WaveInterferenceKeyboardHelpContent( { includeToolControls: true } ),
+      createKeyboardHelpNode: () => new WaveInterferenceKeyboardHelpContent( {
+        includeToolControls: true,
+        includeComboBoxContent: true
+      } ),
       tandem: Tandem.OPT_OUT
     };
     super(

@@ -39,9 +39,10 @@ class ToolboxPanel extends WaveInterferencePanel {
     keyboardHelpDialogLabelStringProperty: WaveInterferenceStrings.keyboardHelpDialog.removeFromToolboxStringProperty
   } );
 
-  // Escape returns a deployed tool to the toolbox. Used by the KeyboardListeners below and documented in the dialog.
+  // Delete/Backspace returns a deployed tool to the toolbox, matching the energy-skate-park convention. Used by the
+  // KeyboardListeners below and documented in the dialog.
   public static readonly RETURN_TO_TOOLBOX_HOTKEY_DATA = new HotkeyData( {
-    keys: [ 'escape' ],
+    keys: [ 'delete', 'backspace' ],
     repoName: waveInterference.name,
     keyboardHelpDialogLabelStringProperty: WaveInterferenceStrings.keyboardHelpDialog.returnToToolboxStringProperty
   } );
@@ -121,14 +122,14 @@ class ToolboxPanel extends WaveInterferencePanel {
     );
 
     // Alternative input: pressing an icon button with the keyboard (Space/Enter) deploys the tool to a default
-    // position in the play area and moves focus to it. Pressing Escape while a deployed tool (or its focusable
-    // descendants) has focus returns the tool to the toolbox and restores focus to the icon. This mirrors the
-    // pointer-based drag-out / drop-in-toolbox interaction. The deploy position is computed relative to the toolbox
-    // so it stays in the play area regardless of layout.
+    // position in the play area and moves focus to it. Pressing Delete/Backspace while a deployed tool (or its
+    // focusable descendants) has focus returns the tool to the toolbox and restores focus to the icon. This mirrors
+    // the pointer-based drag-out / drop-in-toolbox interaction. The deploy position is computed relative to the
+    // toolbox so it stays in the play area regardless of layout.
 
     // The same grab sound the tools' drag listeners play when picked up with the mouse/touch, played here when a tool
     // is grabbed out of the toolbox with the keyboard. The erase sound plays when a tool is sent back to the toolbox
-    // with Escape.
+    // with Delete/Backspace.
     const grabSoundPlayer = sharedSoundPlayers.get( 'grab' );
     const eraseSoundPlayer = sharedSoundPlayers.get( 'erase' );
 
@@ -201,7 +202,7 @@ class ToolboxPanel extends WaveInterferencePanel {
       }
     } ) );
 
-    // Escape is added to the whole wave meter (not just the body) so it also fires when a probe has focus.
+    // Delete/Backspace is added to the whole wave meter (not just the body) so it also fires when a probe has focus.
     waveMeterNode.addInputListener( new KeyboardListener( {
       keyStringProperties: ToolboxPanel.RETURN_TO_TOOLBOX_HOTKEY_DATA.keyStringProperties,
       fire: () => {
