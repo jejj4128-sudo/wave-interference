@@ -90,6 +90,15 @@ type SelfOptions = {
   // see WaveInterferenceControlPanel for keys/values.
   controlPanelOptions?: WaveInterferenceControlPanelOptions;
 
+  // Whether the graph-like wave meter is available from the top-right toolbox.
+  showWaveMeter?: boolean;
+
+  // Extra vertical space between the top toolbox and the control panel.
+  controlPanelTopOffset?: number;
+
+  // Extra vertical space above the standard measuring-tape/stopwatch toolbox.
+  toolboxPanelTopOffset?: number;
+
   audioEnabled?: boolean;
 };
 
@@ -145,7 +154,7 @@ class WavesScreenView extends ScreenView {
   private readonly intensityGraphPanel: IntensityGraphPanel | null;
 
   private readonly timeControlNode: TimeControlNode;
-  private readonly toolboxPanel: ToolboxPanel;
+  protected readonly toolboxPanel: ToolboxPanel;
   private readonly measuringTapeNode: MeasuringTapeNode;
   private readonly stopwatchNode: WaveInterferenceStopwatchNode;
   private readonly resetAllButton: ResetAllButton;
@@ -188,6 +197,12 @@ class WavesScreenView extends ScreenView {
       piecewiseLinearBrightness: false,
 
       lightScreenAveragingWindowSize: 3,
+
+      showWaveMeter: true,
+
+      controlPanelTopOffset: 0,
+
+      toolboxPanelTopOffset: 0,
 
       // Nested options as discussed in https://github.com/phetsims/tasks/issues/730,
       // see WaveInterferenceControlPanel for keys/values
@@ -468,7 +483,7 @@ class WavesScreenView extends ScreenView {
     const waveMeterNode: WaveMeterNode = new WaveMeterNode( model, this );
     model.resetEmitter.addListener( () => waveMeterNode.reset() );
     model.resetEmitter.addListener( () => measuringTapeNode.reset() );
-    model.isWaveMeterInPlayAreaProperty.link( inPlayArea => waveMeterNode.setVisible( inPlayArea ) );
+    model.isWaveMeterInPlayAreaProperty.link( inPlayArea => waveMeterNode.setVisible( options.showWaveMeter && inPlayArea ) );
 
     // Original bounds of the waveMeterNode so we can set the draggable bounds accordingly, so it can go edge to edge
     // in every dimension.
@@ -549,12 +564,12 @@ class WavesScreenView extends ScreenView {
 
     const toolboxPanel = new ToolboxPanel( measuringTapeNode, stopwatchNode, waveMeterNode, alignGroup,
       model.isMeasuringTapeInPlayAreaProperty, model.measuringTapeTipPositionProperty,
-      model.stopwatch, model.isWaveMeterInPlayAreaProperty
+      model.stopwatch, model.isWaveMeterInPlayAreaProperty, { showWaveMeter: options.showWaveMeter }
     );
     const updateToolboxPosition = () => {
       toolboxPanel.mutate( {
         right: this.layoutBounds.right - MARGIN,
-        top: MARGIN
+        top: MARGIN + options.toolboxPanelTopOffset
       } );
     };
     updateToolboxPosition();
@@ -573,7 +588,7 @@ class WavesScreenView extends ScreenView {
     const updateControlPanelPosition = () => {
       this.controlPanel.mutate( {
         right: this.layoutBounds.right - MARGIN,
-        top: toolboxPanel.bottom + SPACING
+        top: toolboxPanel.bottom + SPACING + options.controlPanelTopOffset
       } );
     };
     updateControlPanelPosition();

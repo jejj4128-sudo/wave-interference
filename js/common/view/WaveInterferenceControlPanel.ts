@@ -28,6 +28,7 @@ type SelfOptions = {
   additionalControl?: Node | null;
 
   showIntensityCheckbox?: boolean;
+  showGraphCheckbox?: boolean;
   showSceneRadioButtons?: boolean;
   showPlaySoundControl?: boolean;
   audioEnabled?: boolean;
@@ -51,6 +52,7 @@ class WaveInterferenceControlPanel extends WaveInterferencePanel {
       additionalControl: null,
 
       showIntensityCheckbox: true,
+      showGraphCheckbox: true,
       maxWidth: WaveInterferenceConstants.PANEL_MAX_WIDTH,
       yMargin: 4,
       showSceneRadioButtons: true,
@@ -76,7 +78,7 @@ class WaveInterferenceControlPanel extends WaveInterferencePanel {
     const maxComponentWidth = _.max( [
       ...( soundViewTypeRadioButtonGroup ? [ soundViewTypeRadioButtonGroup.width ] : [] ),
       screenCheckbox.width,
-      graphCheckbox.width,
+      ...( options.showGraphCheckbox ? [ graphCheckbox.width ] : [] ),
       frequencyControl.width,
       amplitudeControl.width
     ] )!;
@@ -171,13 +173,14 @@ class WaveInterferenceControlPanel extends WaveInterferencePanel {
     const CHECKBOX_SPACING = 6;
     separator.top = sceneRadioButtonGroup ? ( sceneRadioButtonGroup.bottom + 8 ) : y;
     graphCheckbox.top = separator.bottom + HORIZONTAL_SEPARATOR_MARGIN;
+    const firstCheckboxBottom = options.showGraphCheckbox ? graphCheckbox.bottom : separator.bottom;
     if ( playToneCheckbox ) {
-      playToneCheckbox.top = graphCheckbox.bottom + CHECKBOX_SPACING;
+      playToneCheckbox.top = firstCheckboxBottom + CHECKBOX_SPACING;
     }
     if ( soundViewTypeRadioButtonGroup ) {
-      soundViewTypeRadioButtonGroup.top = ( playToneCheckbox ? playToneCheckbox.bottom : graphCheckbox.bottom ) + CHECKBOX_SPACING + 2;
+      soundViewTypeRadioButtonGroup.top = ( playToneCheckbox ? playToneCheckbox.bottom : firstCheckboxBottom ) + CHECKBOX_SPACING + 2;
     }
-    screenCheckbox.top = graphCheckbox.bottom + CHECKBOX_SPACING;
+    screenCheckbox.top = firstCheckboxBottom + CHECKBOX_SPACING;
     intensityCheckbox.top = screenCheckbox.bottom + CHECKBOX_SPACING;
 
     const container = new Node();
@@ -219,7 +222,7 @@ class WaveInterferenceControlPanel extends WaveInterferencePanel {
         ...( options.additionalControl ? [ options.additionalControl ] : [] ),
         ...( sceneRadioButtonGroup ? [ sceneRadioButtonGroup ] : [] ),
         separator,
-        graphCheckbox,
+        ...( options.showGraphCheckbox ? [ graphCheckbox ] : [] ),
 
         ...( scene === model.soundScene && playToneCheckbox ? [ playToneCheckbox ] : [] ),
 

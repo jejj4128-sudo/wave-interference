@@ -48,7 +48,10 @@ class ToolboxPanel extends WaveInterferencePanel {
   } );
 
   public constructor( measuringTapeNode: MeasuringTapeNode, stopwatchNode: StopwatchNode, waveMeterNode: WaveMeterNode, alignGroup: AlignGroup, isMeasuringTapeInPlayAreaProperty: Property<boolean>,
-                      measuringTapeTipPositionProperty: TReadOnlyProperty<Vector2>, stopwatch: Stopwatch, isWaveMeterInPlayAreaProperty: Property<boolean> ) {
+                      measuringTapeTipPositionProperty: TReadOnlyProperty<Vector2>, stopwatch: Stopwatch, isWaveMeterInPlayAreaProperty: Property<boolean>,
+                      options: { showWaveMeter?: boolean } = {} ) {
+
+    const showWaveMeter = options.showWaveMeter ?? true;
 
     // icon for the measuring tape
     const measuringTapeIcon = MeasuringTapeNode.createIcon( {
@@ -110,7 +113,7 @@ class ToolboxPanel extends WaveInterferencePanel {
         children: [
           interactiveMeasuringTapeIcon,
           interactiveStopwatchNodeIcon,
-          interactiveWaveMeterIcon
+          ...( showWaveMeter ? [ interactiveWaveMeterIcon ] : [] )
         ],
         excludeInvisibleChildrenFromBounds: false
       } ) ), {
